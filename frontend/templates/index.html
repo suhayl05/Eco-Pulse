@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>Eco Pulse Premium</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#b7f7c8">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-card glass-panel" style="border-radius:45px;">
+    <div style="margin-bottom:1.5rem;">
+      <img src="/static/img/logo.png" style="width:80px;height:80px;border-radius:22px;box-shadow:var(--sh);margin-bottom:1rem;" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=ecopulse'">
+      <div class="splash-logo">ECO<em>PULSE</em></div>
+      <div class="splash-sub" style="font-size:1rem;opacity:0.8;margin-top:0.5rem;font-weight:700;">PLAYER SYSTEM</div>
+    </div>
+    <div style="margin-top:2rem;">
+      <input id="splash-input" class="splash-input" type="text" placeholder="Enter your name..." maxlength="30" autocomplete="off" style="text-align:center;font-size:1.1rem;padding:1.2rem;">
+      <button class="splash-btn" id="splash-btn" style="padding:1.2rem;font-size:1.1rem;">🌱 ENTER</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="glass-panel" style="border-radius:0;border-top:none;border-left:none;border-right:none;backdrop-filter:blur(25px);">
+  <div class="logo">
+    <img src="/static/img/logo.png" style="width:32px;height:32px;border-radius:8px;margin-right:8px;" onerror="this.style.display='none'">
+    ECO<em>PULSE</em>
+  </div>
+  <div class="nav-r">
+    <div class="pill">
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="name-txt">...</span><span id="lv-badge" class="lv-badge">Seedling</span><span id="streak-txt" style="color:#ff9f0a;font-weight:800;">🔥0</span>
+          <button id="manual-install" class="hidden" style="background:var(--p);border:none;color:white;padding:4px 8px;border-radius:12px;font-size:0.65rem;font-weight:900;cursor:pointer;margin-left:4px;">📲 INSTALL</button>
+        </div>
+        <div class="xp-bar-bg"><div id="xp-fill" class="xp-bar-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div id="sim-btn" class="sim-pill">🧪 SIMULATION</div>
+    <div id="diag-btn" class="diag-pill">DIAG</div>
+  </div>
+</nav>
+
+<main>
+  <!-- LEFT: Health & Vision -->
+  <div class="col-l">
+    <div class="card glass-panel" style="text-align:center;">
+      <div class="ct">🌿 Plant Health</div>
+      <div class="health-wrap">
+        <div class="gauge-wrap">
+          <svg class="gsvg" viewBox="0 0 100 100">
+            <circle class="gbg" cx="50" cy="50" r="45"/>
+            <circle class="gfill" id="v-fill" cx="50" cy="50" r="45"/>
+          </svg>
+          <div class="gval"><span class="gnum" id="v-score">0</span><span class="gpct">%</span></div>
+        </div>
+        <div class="st-badge" id="st-badge">STARTING...</div>
+        <div class="feeling" id="feeling-txt"></div>
+        <div class="pts-row">Player Points: <b id="p-total">0</b></div>
+        <button class="analyze-btn" id="analyze-btn">⚡ ANALYZE PLANT</button>
+      </div>
+    </div>
+
+    <div class="card glass-panel">
+      <div class="ct">📷 Vision AI</div>
+      <div class="vision-stage" id="vision-stage">
+        <div id="cam-msg" style="text-align:center;color:#000;font-size:.82rem;font-weight:700;padding:1rem;">Upload or use camera<br>to scan your plant 📸</div>
+        <video id="camera-video" class="hidden" autoplay playsinline></video>
+        <img id="image-pre" class="hidden" alt="">
+        <input type="file" id="up-input" class="hidden" accept="image/*">
+      </div>
+      <div class="v-btns">
+        <button id="cam-btn" class="btn-sm">📷 CAMERA</button>
+        <button id="up-btn" class="btn-sm">📁 UPLOAD</button>
+      </div>
+      <button id="snap-btn" class="scan-btn hidden">🔬 IDENTIFY & DIAGNOSE</button>
+      <div id="ai-resp" class="ai-log">Take a photo of your plant for AI identification and diagnosis.</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Sensors -->
+  <div class="col-r">
+    <div class="card glass-panel">
+      <div class="ct">📡 Environmental Sensors</div>
+      <div class="sensor-grid">
+        <div class="chip"><span class="chip-icon">🌡️</span><span class="chip-val" id="s-t">--</span><div class="chip-lbl">Temp (°C)<span class="chip-opt">Opt: 20-45°</span></div></div>
+        <div class="chip"><span class="chip-icon">💧</span><span class="chip-val" id="s-h">--</span><div class="chip-lbl">Humidity (%)<span class="chip-opt">Opt: 40-80%</span></div></div>
+        <div class="chip"><span class="chip-icon">🌱</span><span class="chip-val" id="s-s">--</span><div class="chip-lbl">Soil (%)<span class="chip-opt">Opt: 40-80%</span></div></div>
+        <div class="chip"><span class="chip-icon">☀️</span><span class="chip-val" id="s-l">--</span><div class="chip-lbl">Light<span class="chip-opt">Opt: Bright</span></div></div>
+      </div>
+      <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: Expanded Leaderboard & Reports -->
+  <div class="bottom-area">
+    <div class="card glass-panel" style="min-height:500px;">
+      <div class="tab-bar">
+        <div class="tab on" data-pane="ranks">🏆 Leaderboard</div>
+        <div class="tab" data-pane="history">📋 History</div>
+        <div class="tab" data-pane="achievements">🥇 Achievements</div>
+        <div class="tab" data-pane="status">📈 Status</div>
+      </div>
+      <div id="pane-ranks" class="pane"></div>
+      <div id="pane-history" class="pane hidden"></div>
+      <div id="pane-achievements" class="pane hidden"><div class="ach-grid" id="ach-grid"></div></div>
+      <div id="pane-status" class="pane hidden">
+        <div class="status-grid">
+          <div class="stat-card">
+            <span class="stat-val" id="st-best">--</span>
+            <span class="stat-lbl">Best Day</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-val" id="st-trend">--</span>
+            <span class="stat-lbl">Trend</span>
+          </div>
+        </div>
+        <div class="stat-card" style="margin-bottom:1rem;">
+          <span class="stat-val" id="st-challenge" style="color:#ff9f0a;">--</span>
+          <span class="stat-lbl">Main Challenge</span>
+        </div>
+        <div style="height:220px;margin-bottom:1rem;"><canvas id="weeklyChart"></canvas></div>
+        
+        <div class="suggestions-box" style="border-color:#007aff;background:rgba(0,122,255,0.05);margin-bottom:1.5rem;">
+          <b style="color:#007aff;">🤖 ML-Optimized Forecast</b>
+          <p id="st-ml-forecast" style="font-weight:800;color:#000;">Waiting for analysis...</p>
+        </div>
+
+        <div class="card glass-panel" style="background:rgba(255,159,10,0.05);border-color:rgba(255,159,10,0.3);">
+          <div class="ct" style="color:#ff9f0a;">🧪 Deep Intelligence</div>
+          <div class="status-grid" style="margin-top:1rem;">
+             <div style="text-align:center;padding:10px;">
+               <div style="font-size:1.2rem;font-weight:900;" id="bio-ls">--</div>
+               <div style="font-size:.7rem;font-weight:700;color:rgba(0,0,0,0.5);">PROJECTED LIFESPAN</div>
+             </div>
+             <div style="text-align:center;padding:10px;border-left:1px solid rgba(0,0,0,0.05);" class="bio-border-fix">
+               <div style="font-size:1.2rem;font-weight:900;" id="bio-st">--%</div>
+               <div style="font-size:.7rem;font-weight:700;color:rgba(0,0,0,0.5);">ENV STABILITY</div>
+             </div>
+          </div>
+          <div style="margin-top:1rem;padding:12px;background:rgba(0,0,0,0.05);border-radius:15px;">
+            <div style="font-size:.75rem;font-weight:900;margin-bottom:5px;">⚠️ ECOSYSTEM HEALTH ALERTS</div>
+            <div id="eco-alerts" style="font-size:.75rem;font-weight:700;color:#ff3b30;">System Stable...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="ach-pop"><span class="pop-icon" id="pop-icon">🏆</span><div><div class="pop-title" id="pop-title">Achievement!</div><div class="pop-desc" id="pop-desc"></div></div></div>
+<div id="diag-ov" class="hidden"><b style="color:lime;">● DIAG</b><div id="diag-log" style="margin-top:6px;"></div></div>
+
+<footer>Eco Pulse Premium · Plant Player System 🌿</footer>
+
+<!-- AI CHAT BUBBLE -->
+<div id="ai-bubble" class="ai-bubble">💬</div>
+<div id="chat-win" class="chat-win hidden">
+  <div class="chat-head"><span>🌿 Plant Talk</span><button id="close-chat" style="background:none;border:none;color:#000;font-weight:900;cursor:pointer;">×</button></div>
+  <div id="chat-body" class="chat-body">
+    <div class="msg bot">Hello! I'm your plant. How are we doing today? 🌿</div>
+  </div>
+  <div class="chat-input-row">
+    <input id="chat-in" type="text" placeholder="Ask me anything..." maxlength="100">
+    <button id="chat-send">🌱</button>
+  </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

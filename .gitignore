@@ -1,0 +1,29 @@
+# Python Virtual Environment
+.venv/
+venv/
+__pycache__/
+
+# Environment Variables (DO NOT UPLOAD API KEYS)
+.env
+
+# Database Files
+data/ecopulse.db
+data/ecopulse.db-shm
+data/ecopulse.db-wal
+
+# PyCharm Settings & IDE Files
+.idea/
+
+# Large Executables
+cloudflared.exe
+cloudflared.exe.exe
+
+# University Reports & Presentations
+*.docx
+*.pptx
+*.pdf
+*.zip
+eco_pulse_report.md
+
+# macOS clutter
+.DS_Store

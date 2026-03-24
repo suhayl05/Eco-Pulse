@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco Pulse | Professional Plant Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="blob-bg">
+        <div class="blob b1"></div>
+        <div class="blob b2"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="logo">🌿 Eco Pulse</div>
+        <div class="nav-controls">
+            <div class="control-item">
+                <span>🌱 Plant: </span>
+                <strong id="current-plant-name">My Fern</strong>
+                <button id="change-plant-btn" class="mini-btn">Edit</button>
+            </div>
+            <div class="control-item">
+                <span>Simulation</span>
+                <label class="switch">
+                    <input type="checkbox" id="sim-mode">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="user-badge">
+                <span id="display-name">...</span>
+                <span id="display-level" class="level-tag">Beginner</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-grid">
+        <!-- TOP LEFT: Health & Activity -->
+        <section class="card health-section">
+            <div class="card-header">
+                <h3>Plant Health</h3>
+                <span id="status-badge" class="badge">Healthy</span>
+            </div>
+            <div class="health-main">
+                <div class="gauge-container">
+                    <svg viewBox="0 0 100 100" class="health-gauge">
+                        <circle class="bg" cx="50" cy="50" r="45"></circle>
+                        <circle class="progress" cx="50" cy="50" r="45" id="health-gauge-circle"></circle>
+                    </svg>
+                    <div class="gauge-text">
+                        <span id="health-score">0</span>
+                        <small>Score</small>
+                    </div>
+                </div>
+                <div class="health-stats">
+                    <div class="stat-bubble">
+                        <span id="points-delta">+0</span>
+                        <small>Points</small>
+                    </div>
+                    <div class="stat-bubble">
+                        <span id="user-points">0</span>
+                        <small>Total</small>
+                    </div>
+                </div>
+            </div>
+            <div class="activity-log-container">
+                <h4>Recent Checks</h4>
+                <div id="activity-log" class="activity-log">
+                    <div class="log-entry empty">No checks yet today.</div>
+                </div>
+            </div>
+            <button id="analyze-btn" class="primary-btn">✨ Analyze Plant Health</button>
+        </section>
+
+        <!-- TOP RIGHT: Sensors & Graph -->
+        <section class="card sensor-section">
+            <div class="card-header">
+                <h3>Sensors & Trends</h3>
+            </div>
+            <div class="sensor-grid">
+                <div class="sensor-item">
+                    <span class="icon">🌡️</span>
+                    <div class="info">
+                        <small>Temp</small>
+                        <strong id="temp-val">0°C</strong>
+                    </div>
+                </div>
+                <div class="sensor-item">
+                    <span class="icon">💧</span>
+                    <div class="info">
+                        <small>Humidity</small>
+                        <strong id="hum-val">0%</strong>
+                    </div>
+                </div>
+                <div class="sensor-item">
+                    <span class="icon">🌱</span>
+                    <div class="info">
+                        <small>Soil</small>
+                        <strong id="soil-val">0%</strong>
+                    </div>
+                </div>
+                <div class="sensor-item">
+                    <span class="icon">☀️</span>
+                    <div class="info">
+                        <small>Light</small>
+                        <strong id="light-val">0%</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="graph-container">
+                <canvas id="health-trend-chart"></canvas>
+            </div>
+        </section>
+
+        <!-- BOTTOM LEFT: Vision AI -->
+        <section class="card vision-section">
+            <h3>Vision AI Analysis</h3>
+            <div class="vision-stage">
+                <div id="image-preview" class="image-preview">
+                    <!-- Preview shows here after capture -->
+                </div>
+                <video id="camera-feed" autoplay playsinline class="hidden"></video>
+                <canvas id="camera-canvas" class="hidden"></canvas>
+                <div id="camera-placeholder" class="placeholder">
+                    <span>📷 Camera Off</span>
+                </div>
+            </div>
+            <div class="vision-controls">
+                <button id="open-camera" class="secondary-btn">Start Cam</button>
+                <button id="take-photo" class="primary-btn" disabled>Capture</button>
+                <button id="upload-btn" class="secondary-btn">Upload</button>
+                <input type="file" id="photo-upload" hidden accept="image/*">
+            </div>
+            <div id="vision-result" class="ai-insight-box">
+                Snap a photo for AI plant diagnosis!
+            </div>
+        </section>
+
+        <!-- BOTTOM RIGHT: Community & Achievements -->
+        <section class="card social-section">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('leaderboard')">Leaderboard</button>
+                <button class="tab-btn" onclick="showTab('achievements')">Medals</button>
+            </div>
+
+            <div id="tab-leaderboard" class="tab-content">
+                <div id="leaderboard-list" class="scroll-list"></div>
+                <div class="social-footer">
+                    <button id="add-player-btn" class="outline-btn">+ Add Player</button>
+                    <button id="reset-btn" class="text-btn danger">Reset All</button>
+                </div>
+            </div>
+
+            <div id="tab-achievements" class="tab-content hidden">
+                <div id="achievements-list" class="ach-grid"></div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span id="prev-level">Seedling</span>
+                        <span id="next-level">Sprout</span>
+                    </div>
+                    <div class="bar-bg">
+                        <div id="level-progress" class="bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div id="add-modal" class="modal">
+        <div class="glass-card modal-content">
+            <h3>New Player</h3>
+            <input type="text" id="new-player-name" placeholder="Enter name...">
+            <div class="modal-btns">
+                <button id="confirm-add" class="primary-btn">Join</button>
+                <button id="cancel-add" class="secondary-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating AI Tip -->
+    <div id="ai-tip-container" class="tip-float">
+        <span class="icon">💡</span>
+        <p id="ai-tip">Welcome! Click "Analyze" to sync your physical plant data.</p>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
